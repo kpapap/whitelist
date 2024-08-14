@@ -7,8 +7,6 @@ import (
 
 // Config represents the receiver config settings within the collector's config.yaml
 type Config struct {
-	// The name of the configMap.
-	ConfigMapName string `mapstructure:"config_map_name"`
 	// The interval of the collector.
 	Interval string `mapstructure:"config_interval"`
 }

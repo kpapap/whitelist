@@ -8,14 +8,13 @@ import (
 	"go.opentelemetry.io/collector/receiver"
 )
 
-var (typeStr = component.MustNewType("nbcmr"))
+var (typeStr = component.MustNewType("whitelist"))
 const (defaultInterval = "1m")
-const (defaultConfigMapName = "nbcmr-cm")
 
 // createLogsReceiver creates a new instance of the nbcmr receiver.
 func createLogsReceiver(ctx context.Context, set receiver.Settings, cfg component.Config, nextConsumer consumer.Logs) (receiver.Logs, error) {
 	// Create the new receiver
-	logs := &nbcmrReceiver{
+	logs := &whitelistReceiver{
 			config:       cfg.(*Config),
 			nextConsumer: nextConsumer,
 			logger:       set.Logger,
@@ -37,6 +36,5 @@ func NewFactory() receiver.Factory {
 func createDefaultConfig() component.Config {
 	return &Config{
 		Interval: defaultInterval,
-		ConfigMapName: defaultConfigMapName,
 	}
 }
