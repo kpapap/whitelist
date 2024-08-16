@@ -27,7 +27,7 @@ func (c *whitelistReceiver) ConsumeLogs(ctx context.Context, ld consumer.Logs) e
 	return nil
 }
 
-func (r *whitelistReceiver) Start(ctx context.Context, host component.Host) error {
+func (r *whitelistReceiver) Start(ctx context.Context, host component.Host) (context.Context, error) {
 	// Start the receiver
 	// Create an http ticket for http checks
 	log.Println("Creating HTTP ticker")
@@ -44,19 +44,15 @@ func (r *whitelistReceiver) Start(ctx context.Context, host component.Host) erro
 	log.Println("HTTP Ticker created")
 
 	// Check connection
-	for range httpticker.C {
-		log.Println("Checking http connection...")
-		conn, err := net.DialTimeout("tcp", "www.google.com:80", 3*time.Second)
+	log.Println("Checking http connection...")
+	conn, err := net.DialTimeout("tcp", "www.google.com:80", 3*time.Second)
 		if err != nil {
 			fmt.Println("port closed")
-			return err
 		}
-		defer conn.Close()
-		fmt.Println("port open")
-	}
-	return nil
-	}
-	
+	defer conn.Close()
+	fmt.Println("port open")
+	return ctx, nil
+}
 
 // Shutdown shuts down the receiver.
 func (r *whitelistReceiver) Shutdown(ctx context.Context) error {
