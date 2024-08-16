@@ -9,11 +9,12 @@ import (
 )
 
 const (defaultInterval = "1m")
+var (typeStr = component.MustNewType("whitelist"))
 
 // NewFactory creates a new receiver factory.
 func NewFactory() receiver.Factory {
 	return receiver.NewFactory(
-		metadata.Type,
+		typeStr,
 		createDefaultConfig,
 		receiver.WithLogs(createLogsReceiver, metadata.LogsStability),
 	)
