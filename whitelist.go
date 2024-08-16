@@ -30,10 +30,6 @@ func newWhitelistReceiver(cfg *Config, nextConsumer consumer.Logs, settings rece
 		nextConsumer:	nextConsumer,
 		settings:			settings,
 	}
-	var err error
-	if err != nil {
-		return nil, err
-	}
 	return r, nil
 }
 
@@ -77,8 +73,3 @@ func (r *whitelistReceiver) Shutdown(ctx context.Context) error {
 	// Return err to indicate that the receiver shut down successfully.
 	return err
 }
-
-func (r *whitelistReceiver) registerLogsConsumer(lc consumer.Logs) {
-	r.nextConsumer = lc
-}
-
