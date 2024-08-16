@@ -16,7 +16,7 @@ func NewFactory() receiver.Factory {
 	return receiver.NewFactory(
 		typeStr,
 		createDefaultConfig,
-		receiver.WithLogs(createLogsReceiver, metadata.LogsStability),
+		receiver.WithLogs(createLogsReceiver, component.StabilityLevelUndefined),
 	)
 }
 

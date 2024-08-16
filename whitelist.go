@@ -15,20 +15,20 @@ import (
 
 
 type whitelistReceiver struct {
-	cfg      		*Config
-	nextLogs    consumer.Logs
-	settings 		receiver.Settings
-	shutdownWG  sync.WaitGroup
+	cfg      			*Config
+	nextConsumer	consumer.Logs
+	settings 			receiver.Settings
+	shutdownWG  	sync.WaitGroup
 }
 
 // newWhitelistReceiver just creates the OpenTelemetry receiver services. It is the caller's
 // responsibility to invoke the respective Start*Reception methods as well
 // as the various Stop*Reception methods to end it.
-func newWhitelistReceiver(cfg *Config, nextLogs consumer.Logs, settings receiver.Settings) (*whitelistReceiver, error) {
+func newWhitelistReceiver(cfg *Config, nextConsumer consumer.Logs, settings receiver.Settings) (*whitelistReceiver, error) {
 	r := &whitelistReceiver{
-		cfg:         cfg,
-		nextLogs:    nil,
-		settings:    settings,
+		cfg:        	cfg,
+		nextConsumer:	nextConsumer,
+		settings:			settings,
 	}
 	var err error
 	if err != nil {
@@ -79,6 +79,6 @@ func (r *whitelistReceiver) Shutdown(ctx context.Context) error {
 }
 
 func (r *whitelistReceiver) registerLogsConsumer(lc consumer.Logs) {
-	r.nextLogs = lc
+	r.nextConsumer = lc
 }
 
