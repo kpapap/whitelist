@@ -8,33 +8,30 @@ import (
 	"go.opentelemetry.io/collector/receiver"
 )
 
-var (typeStr = component.MustNewType("whitelist"))
 const (defaultInterval = "1m")
 
-// createLogsReceiver creates a new instance of the nbcmr receiver.
-func createLogsReceiver(ctx context.Context, set receiver.Settings, cfg component.Config, nextConsumer consumer.Logs) (receiver.Logs, error) {
-	// Create the new receiver
-	logs := &whitelistReceiver{
-			config:       cfg.(*Config),
-			nextConsumer: nextConsumer,
-			logger:       set.Logger,
-	}
-	return logs, nil
-}
-
-// NewFactory creates a new receiver factory for the nbcmr receiver.
+// NewFactory creates a new receiver factory.
 func NewFactory() receiver.Factory {
 	return receiver.NewFactory(
-		typeStr,
+		metadata.Type,
 		createDefaultConfig,
-		receiver.WithLogs(createLogsReceiver, component.StabilityLevelAlpha))
+		receiver.WithLogs(createLogsReceiver, metadata.LogsStability),
+	)
 }
 
-// createDefaultConfig returns the default configuration for the nbcmr receiver.
+// createDefaultConfig returns the default configuration for the  receiver.
 // This function is used when creating a new factory to provide a default configuration
 // for the receiver.
 func createDefaultConfig() component.Config {
 	return &Config{
 		Interval: defaultInterval,
 	}
+}
+
+// createLogsReceiver creates a new instance of the logs receiver.
+// createLogsReceiver creates a log receiver based on provided config.
+func createLogsReceiver(_ context.Context, settings receiver.Settings, cfg component.Config, consumer consumer.Logs) (receiver.Logs, error) {
+	// Create the new receiver
+	rCfg := cfg.(*Config)
+	return newWhitelistReceiver(rCfg, consumer, settings)
 }

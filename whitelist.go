@@ -5,30 +5,40 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"sync"
 	"time"
 
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/consumer"
-	"go.uber.org/zap"
+	"go.opentelemetry.io/collector/receiver"
 )
 
 
 type whitelistReceiver struct {
-	config *Config
-	logger *zap.Logger
-	nextConsumer consumer.Logs
+	cfg      		*Config
+	nextLogs    consumer.Logs
+	settings 		receiver.Settings
+	shutdownWG  sync.WaitGroup
 }
 
-func (c *whitelistReceiver) Capabilities() consumer.Capabilities {
-	return consumer.Capabilities{MutatesData: false}
+// newWhitelistReceiver just creates the OpenTelemetry receiver services. It is the caller's
+// responsibility to invoke the respective Start*Reception methods as well
+// as the various Stop*Reception methods to end it.
+func newWhitelistReceiver(cfg *Config, nextLogs consumer.Logs, settings receiver.Settings) (*whitelistReceiver, error) {
+	r := &whitelistReceiver{
+		cfg:         cfg,
+		nextLogs:    nil,
+		settings:    settings,
+	}
+	var err error
+	if err != nil {
+		return nil, err
+	}
+	return r, nil
 }
 
-func (c *whitelistReceiver) ConsumeLogs(ctx context.Context, ld consumer.Logs) error {
-	return nil
-}
-
+// Start the receiver
 func (r *whitelistReceiver) Start(ctx context.Context, host component.Host) error {
-	// Start the receiver
 	// Create an http ticket for http checks
 	log.Println("Creating HTTP ticker")
 	httprepeatTimeStr := "1m"
@@ -58,12 +68,17 @@ func (r *whitelistReceiver) Start(ctx context.Context, host component.Host) erro
 	}
 	
 
-// Shutdown shuts down the receiver.
+// Shutdown the receiver.
 func (r *whitelistReceiver) Shutdown(ctx context.Context) error {
-	// Shutdown the receiver
+	var err error
+	r.shutdownWG.Wait()
 	// Log a message indicating that the receiver is shutting down.
 	log.Println("Shutting down receiver")
-	// Return nil to indicate that the receiver shut down successfully.
-	return nil
+	// Return err to indicate that the receiver shut down successfully.
+	return err
+}
+
+func (r *whitelistReceiver) registerLogsConsumer(lc consumer.Logs) {
+	r.nextLogs = lc
 }
 
