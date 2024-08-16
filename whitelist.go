@@ -9,7 +9,6 @@ import (
 
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/consumer"
-	"go.opentelemetry.io/collector/pdata/plog"
 	"go.uber.org/zap"
 )
 
@@ -24,8 +23,8 @@ func (c *whitelistReceiver) Capabilities() consumer.Capabilities {
 	return consumer.Capabilities{MutatesData: false}
 }
 
-func (c *whitelistReceiver) ConsumeLogs(ctx context.Context, ld plog.Logs) error {
-	return c.nextConsumer.ConsumeLogs(ctx, ld)
+func (c *whitelistReceiver) ConsumeLogs(ctx context.Context, ld consumer.Logs) error {
+	return nil
 }
 
 func (r *whitelistReceiver) Start(ctx context.Context, host component.Host) error {
