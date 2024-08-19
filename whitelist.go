@@ -50,21 +50,24 @@ func (r *whitelistReceiver) Start(ctx context.Context, host component.Host) erro
 	log.Println("HTTP Ticker created")
 
 	// Check connection
-	for range httpticker.C {
-		log.Println("Checking http connection...")
-		conn, err := net.DialTimeout("tcp", "www.google.com:80", 3*time.Second)
-		if err != nil {
-			fmt.Println("port closed")
-			return err
+	for {
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		case <-httpticker.C:
+			log.Println("Checking http connection...")
+			conn, err := net.DialTimeout("tcp", "www.google.com:80", 3*time.Second)
+			if err != nil {
+				fmt.Println("port closed")
+				return err
+			}
+			defer conn.Close()
+			fmt.Println("port open")
 		}
-		defer conn.Close()
-		fmt.Println("port open")
 	}
-	return nil
-	}
-	
+}
 
-// Shutdown the receiver.
+// Shutdown the receiver
 func (r *whitelistReceiver) Shutdown(ctx context.Context) error {
 	var err error
 	r.shutdownWG.Wait()
