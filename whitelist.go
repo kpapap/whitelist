@@ -8,11 +8,13 @@ import (
 
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/consumer"
+	"go.opentelemetry.io/collector/pdata/plog"
 	"go.opentelemetry.io/collector/receiver"
 )
 
 
 type whitelistReceiver struct {
+	ctx						context.Context
 	cfg      			*Config
 	nextConsumer	consumer.Logs
 	settings 			receiver.Settings
@@ -22,12 +24,22 @@ type whitelistReceiver struct {
 // newWhitelistReceiver just creates the OpenTelemetry receiver services. It is the caller's
 // responsibility to invoke the respective Start*Reception methods as well
 // as the various Stop*Reception methods to end it.
-func newWhitelistReceiver(cfg *Config, nextConsumer consumer.Logs, settings receiver.Settings) (*whitelistReceiver, error) {
+func newWhitelistReceiver(ctx context.Context, cfg *Config, nextConsumer consumer.Logs, settings receiver.Settings) (*whitelistReceiver, error) {
 	r := &whitelistReceiver{
+		ctx:        	ctx,
 		cfg:        	cfg,
 		nextConsumer:	nextConsumer,
 		settings:			settings,
 	}
+	// Proceed to the next receiver.
+	go func() {
+		logs := plog.NewLogs()
+		err := r.nextConsumer.ConsumeLogs(ctx, logs)
+		if err != nil {
+			// Handle the error
+			r.settings.Logger.Sugar().Errorf("error consuming logs: %v", err.Error())
+		}
+	}()
 	return r, nil
 }
 

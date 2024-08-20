@@ -34,5 +34,5 @@ func createDefaultConfig() component.Config {
 func createLogsReceiver(ctx context.Context, settings receiver.Settings, cfg component.Config, consumer consumer.Logs) (receiver.Logs, error) {
 	// Create the new receiver
 	rCfg := cfg.(*Config)
-	return newWhitelistReceiver(rCfg, consumer, settings)
+	return newWhitelistReceiver(ctx, rCfg, consumer, settings)
 }
