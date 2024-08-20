@@ -2,7 +2,6 @@ package whitelist
 
 import (
 	"context"
-	"log"
 	"net"
 	"sync"
 	"time"
@@ -71,7 +70,7 @@ func (r *whitelistReceiver) Shutdown(ctx context.Context) error {
 	var err error
 	r.shutdownWG.Wait()
 	// Log a message indicating that the receiver is shutting down.
-	log.Println("Shutting down receiver")
+	r.settings.Logger.Info("Shutting down receiver")
 	// Return err to indicate that the receiver shut down successfully.
 	return err
 }
