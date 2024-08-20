@@ -2,7 +2,6 @@ package whitelist
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net"
 	"sync"
@@ -36,18 +35,18 @@ func newWhitelistReceiver(cfg *Config, nextConsumer consumer.Logs, settings rece
 // Start the receiver
 func (r *whitelistReceiver) Start(ctx context.Context, host component.Host) error {
 	// Create an http ticket for http checks
-	log.Println("Creating HTTP ticker")
+	r.settings.Logger.Info("Creating HTTP ticker")
 	httprepeatTimeStr := "1m"
 	if httprepeatTimeStr == "" {
-		log.Fatal("HTTP ticker is not set")
+		r.settings.Logger.Error("HTTP ticker is not set")
 	}
 	httprepeatTime, err := time.ParseDuration(httprepeatTimeStr)
 	if err != nil {
-		log.Fatalf("Error parsing http ticker environment variable: %s", err.Error())
+		r.settings.Logger.Error("Error parsing http ticker environment variable: %s")
 	}
 	httpticker := time.NewTicker(httprepeatTime)
 	defer httpticker.Stop()
-	log.Println("HTTP Ticker created")
+	r.settings.Logger.Info("HTTP Ticker created")
 
 	// Check connection
 	for {
@@ -55,14 +54,14 @@ func (r *whitelistReceiver) Start(ctx context.Context, host component.Host) erro
 		case <-ctx.Done():
 			return ctx.Err()
 		case <-httpticker.C:
-			log.Println("Checking http connection...")
+			r.settings.Logger.Info("Checking http connection...")
 			conn, err := net.DialTimeout("tcp", "www.google.com:80", 3*time.Second)
 			if err != nil {
-				fmt.Println("port closed")
+				r.settings.Logger.Info("port closed")
 				return err
 			}
 			defer conn.Close()
-			fmt.Println("port open")
+			r.settings.Logger.Info("port open")
 		}
 	}
 }
