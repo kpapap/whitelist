@@ -2,7 +2,6 @@ package whitelist
 
 import (
 	"context"
-	"log"
 	"net"
 	"sync"
 	"time"
@@ -68,7 +67,6 @@ func (r *whitelistReceiver) Start(ctx context.Context, host component.Host) erro
 			r.settings.Logger.Info("port open")
 		}
 		r.obsreport.EndLogsOp(ctx, "", 0, nil)
-
 	}
 }
 // Shutdown the receiver
@@ -76,7 +74,8 @@ func (r *whitelistReceiver) Shutdown(ctx context.Context) error {
 	var err error
 	r.shutdownWG.Wait()
 	// Log a message indicating that the receiver is shutting down.
-	log.Println("Shutting down receiver")
+	r.settings.Logger.Info("Shutting down receiver")
 	// Return err to indicate that the receiver shut down successfully.
+	r.obsreport.EndLogsOp(ctx, "", 0, nil)
 	return err
 }
