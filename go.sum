@@ -46,6 +46,7 @@ github.com/stretchr/testify v1.9.0/go.mod h1:r2ic/lqez/lEtzL7wO/rwa5dbSLXVDPFyf8
 github.com/yuin/goldmark v1.1.27/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
 github.com/yuin/goldmark v1.2.1/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
 go.opentelemetry.io/collector v0.107.0 h1:C1Mng03iE73flGhEg795IFVlr3qhDLef5GESjIVtx5g=
+go.opentelemetry.io/collector v0.107.0/go.mod h1:7xDYvzBb3Ez6qFQl0IArBbmNNazIxZMVoRkbgJYRjyg=
 go.opentelemetry.io/collector/component v0.107.0 h1:3ReaEAtKwrPj7HrlKjEGBDKbBaxdRMPC2mfZ9b6zjXE=
 go.opentelemetry.io/collector/component v0.107.0/go.mod h1:1xMIYKvpnP7laipjgEw7kq1ozG7ySLkA0Evhr2Bp8M4=
 go.opentelemetry.io/collector/config/configtelemetry v0.107.0 h1:pSGd4FWQ/Up/Af+XZTR8JNneH/wmQ/TAU4Z16JHQeUc=

@@ -10,6 +10,7 @@ import (
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/consumer"
 	"go.opentelemetry.io/collector/receiver"
+	"go.opentelemetry.io/collector/receiver/receiverhelper"
 )
 
 
@@ -18,6 +19,7 @@ type whitelistReceiver struct {
 	nextConsumer	consumer.Logs
 	settings 			receiver.Settings
 	shutdownWG  	sync.WaitGroup
+	obsreport 		*receiverhelper.ObsReport
 }
 
 // newWhitelistReceiver just creates the OpenTelemetry receiver services. It is the caller's
@@ -35,6 +37,8 @@ func newWhitelistReceiver(cfg *Config, nextConsumer consumer.Logs, settings rece
 // Start the receiver
 func (r *whitelistReceiver) Start(ctx context.Context, host component.Host) error {
 	// Create an http ticket for http checks
+	ctx = r.obsreport.StartLogsOp(ctx)
+	
 	r.settings.Logger.Info("Creating HTTP ticker")
 	httprepeatTimeStr := "1m"
 	if httprepeatTimeStr == "" {
@@ -63,9 +67,10 @@ func (r *whitelistReceiver) Start(ctx context.Context, host component.Host) erro
 			defer conn.Close()
 			r.settings.Logger.Info("port open")
 		}
+		r.obsreport.EndLogsOp(ctx, "", 0, nil)
+
 	}
 }
-
 // Shutdown the receiver
 func (r *whitelistReceiver) Shutdown(ctx context.Context) error {
 	var err error
