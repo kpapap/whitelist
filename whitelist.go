@@ -32,14 +32,12 @@ func newWhitelistReceiver(ctx context.Context, cfg *Config, nextConsumer consume
 		settings:			settings,
 	}
 	// Proceed to the next receiver.
-	go func() {
-		logs := plog.NewLogs()
-		err := r.nextConsumer.ConsumeLogs(ctx, logs)
-		if err != nil {
-			// Handle the error
-			r.settings.Logger.Sugar().Errorf("error consuming logs: %v", err.Error())
-		}
-	}()
+	logs := plog.NewLogs()
+	err := r.nextConsumer.ConsumeLogs(ctx, logs)
+	if err != nil {
+		// Handle the error
+		r.settings.Logger.Sugar().Errorf("error consuming logs: %v", err.Error())
+	}
 	return r, nil
 }
 
@@ -60,11 +58,6 @@ func (r *whitelistReceiver) Start(ctx context.Context, host component.Host) erro
 	r.settings.Logger.Info("HTTP Ticker created")
 
 	// Check connection
-	for {
-		select {
-		case <-ctx.Done():
-			return ctx.Err()
-		case <-httpticker.C:
 			r.settings.Logger.Info("Checking http connection...")
 			conn, err := net.DialTimeout("tcp", "www.google.com:80", 3*time.Second)
 			if err != nil {
@@ -73,9 +66,9 @@ func (r *whitelistReceiver) Start(ctx context.Context, host component.Host) erro
 			}
 			defer conn.Close()
 			r.settings.Logger.Info("port open")
+			return nil
 		}
-	}
-}
+
 
 // Shutdown the receiver
 func (r *whitelistReceiver) Shutdown(ctx context.Context) error {
