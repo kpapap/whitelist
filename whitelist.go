@@ -42,7 +42,7 @@ func (r *whitelistReceiver) Start(ctx context.Context, host component.Host) erro
 	}
 	httprepeatTime, err := time.ParseDuration(httprepeatTimeStr)
 	if err != nil {
-		r.settings.Logger.Error("Error parsing http ticker environment variable: %s")
+		r.settings.Logger.Sugar().Errorf("Error parsing http ticker environment variable: %s", err.Error())
 	}
 	httpticker := time.NewTicker(httprepeatTime)
 	defer httpticker.Stop()
