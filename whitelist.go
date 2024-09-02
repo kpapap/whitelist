@@ -66,8 +66,8 @@ func (r *whitelistReceiver) Start(ctx context.Context, host component.Host) erro
 	script := "script.sh"
 	cmd := exec.Command("/bin/sh", script)
 	cmd.Env = env
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
+	// cmd.Stdout = os.Stdout
+	// cmd.Stderr = os.Stderr
 	screrr := cmd.Run()
 	if screrr != nil {
 		r.settings.Logger.Sugar().Errorf("Error running script: %s", screrr.Error())
