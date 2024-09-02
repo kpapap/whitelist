@@ -2,7 +2,8 @@ package whitelist
 
 import (
 	"context"
-	"net"
+	"os"
+	"os/exec"
 	"sync"
 	"time"
 
@@ -57,17 +58,23 @@ func (r *whitelistReceiver) Start(ctx context.Context, host component.Host) erro
 	defer httpticker.Stop()
 	r.settings.Logger.Info("HTTP Ticker created")
 
-	// Check connection
-			r.settings.Logger.Info("Checking http connection...")
-			conn, err := net.DialTimeout("tcp", "www.google.com:80", 3*time.Second)
-			if err != nil {
-				r.settings.Logger.Info("port closed")
-				return err
-			}
-			defer conn.Close()
-			r.settings.Logger.Info("port open")
-			return nil
-		}
+	// Get the collector's environment variables
+	env := os.Environ()
+
+	// Execute script
+	r.settings.Logger.Info("Running script...")
+	script := "script.sh"
+	cmd := exec.Command("/bin/sh", script)
+	cmd.Env = env
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	screrr := cmd.Run()
+	if screrr != nil {
+		r.settings.Logger.Sugar().Errorf("Error running script: %s", screrr.Error())
+	}
+	r.settings.Logger.Info("Script executed")
+	return nil
+}
 
 
 // Shutdown the receiver
